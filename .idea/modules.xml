@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AnwendungenMI.iml" filepath="$PROJECT_DIR$/AnwendungenMI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sonicphone.frame_processor/sonicphone.frame_processor.iml" filepath="$PROJECT_DIR$/sonicphone.frame_processor/sonicphone.frame_processor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sonicphone.infrastructure/sonicphone.infrastructure.iml" filepath="$PROJECT_DIR$/sonicphone.infrastructure/sonicphone.infrastructure.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sonicphone.network_frame_provider/sonicphone.network_frame_provider.iml" filepath="$PROJECT_DIR$/sonicphone.network_frame_provider/sonicphone.network_frame_provider.iml" />
+    </modules>
+  </component>
+</project>

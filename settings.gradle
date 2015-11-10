@@ -1,0 +1,1 @@
+include ':app', ':sonicphone.infrastructure', ':sonicphone.network_frame_provider', ':sonicphone.frame_processor'
