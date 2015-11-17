@@ -11,8 +11,10 @@ import java.nio.ByteBuffer;
 
 public class FrameProcessorImpl implements IFrameProcessor {
 
+    // Breite des finalen Bitmap-Objekts
     private int width = 0;
 
+    // Hoehe des finalen Bitmap-Objekts
     private int height = 0;
 
     private Bitmap finalFrame = null;
