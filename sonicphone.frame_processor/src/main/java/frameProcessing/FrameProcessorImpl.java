@@ -42,8 +42,7 @@ public class FrameProcessorImpl implements IFrameProcessor {
         int[] pixels = new int[size];
         int u, v, y1, y2, y3, y4;
 
-        // i percorre os Y and the final pixels
-        // k percorre os pixles U e V
+
         for(int i=0, k=0; i < size; i+=2, k+=2) {
             y1 = rawFrame[i  ]&0xff;
             y2 = rawFrame[i+1]&0xff;
@@ -80,14 +79,21 @@ public class FrameProcessorImpl implements IFrameProcessor {
     }
 
     private byte[][] extractRelevantParts () {
+        byte[] UltrasonicScan = extractUltrasonicScan();
+        byte[] ColorScale = extractColorScale();
+
         return null;
     }
 
-    private byte[] extractMainPicture () {
+    private byte[] extractUltrasonicScan () {
+        PositionData UltrasonicScanPosition = new PositionData(1, 1, 1, 1);
+
         return null;
     }
 
     private byte[] extractColorScale () {
+        PositionData ColorScalePosition = new PositionData(0, 0, 0, 0);
+
         return null;
     }
 
