@@ -6,16 +6,20 @@ package frameProcessing;
 
 import interfaces.IFrameProcessor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapRegionDecoder;
+import android.graphics.Rect;
 
 import java.nio.ByteBuffer;
 
 public class FrameProcessorImpl implements IFrameProcessor {
 
     // Breite des finalen Bitmap-Objekts
-    private int width = 0;
+    private int width = 1024;
 
     // Hoehe des finalen Bitmap-Objekts
-    private int height = 0;
+    private int height = 768;
+
+    private Bitmap source = null;
 
     private Bitmap finalFrame = null;
 
@@ -26,7 +30,7 @@ public class FrameProcessorImpl implements IFrameProcessor {
     public Bitmap processFrame (byte[] rawFrame) {
 
         int[] pixels = convertNv12ToBmp(rawFrame, width, height);
-        finalFrame = createBitmap(pixels, width, height);
+        source = createBitmap(pixels, width, height);
 
         return null;
     }
@@ -79,22 +83,30 @@ public class FrameProcessorImpl implements IFrameProcessor {
     }
 
     private byte[][] extractRelevantParts () {
-        byte[] UltrasonicScan = extractUltrasonicScan();
-        byte[] ColorScale = extractColorScale();
+
+        Bitmap UltrasonicScan = extractUltrasonicScan();
+        Bitmap ColorScale = extractColorScale();
+
+
+
+
 
         return null;
     }
 
-    private byte[] extractUltrasonicScan () {
-        PositionData UltrasonicScanPosition = new PositionData(1, 1, 1, 1);
+    private Bitmap extractUltrasonicScan () {
+        Rect UltrasonicScanRegion = new Rect(173, 58, 800, 540);
+        Bitmap UltrasonicScan = Bitmap.createBitmap(source, 173, 58, UltrasonicScanRegion.width(), UltrasonicScanRegion.height());
+        // oder mit "drawBitmap"?
 
-        return null;
+        return UltrasonicScan;
     }
 
-    private byte[] extractColorScale () {
-        PositionData ColorScalePosition = new PositionData(0, 0, 0, 0);
+    private Bitmap extractColorScale () {
+        Rect ColorScaleRegion = new Rect(1, 1, 1, 1);
+        Bitmap ColorScale = Bitmap.createBitmap(source, 1, 1, ColorScaleRegion.width(), ColorScaleRegion.height());
 
-        return null;
+        return ColorScale;
     }
 
     private void buildFinalFrame() {
