@@ -1,9 +1,12 @@
 package de.fh_dortmund.sonicphone;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends Activity {
 
@@ -13,6 +16,18 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 //        int res = (int) (Math.random() * 10);
 //        RandomClass.DivideByZero();
+
+        Button nextActivity = (Button)findViewById(R.id.frameViewer);
+        nextActivity.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                //Intent myIntent = new Intent(MainActivity.this, neueActivity.class);
+                Intent myIntent = new Intent(view.getContext(), FrameViewerActivity.class);
+                MainActivity.this.startActivity(myIntent);
+            }
+
+        });
+
     }
 
     @Override
