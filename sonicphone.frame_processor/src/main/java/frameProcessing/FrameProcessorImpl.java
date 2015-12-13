@@ -8,16 +8,27 @@ import interfaces.IFrameProcessor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapRegionDecoder;
 import android.graphics.Rect;
+import android.os.Environment;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 
 public class FrameProcessorImpl implements IFrameProcessor {
 
-    // Breite des finalen Bitmap-Objekts
-    private int width = 1024;
+    private static Logger log = Logger.getLogger("FrameProcessorImpl");
 
-    // Hoehe des finalen Bitmap-Objekts
-    private int height = 768;
+    // Breite des source-Bitmap-Objekts
+    // private int width = 1024;
+    private int width = 1280;
+
+    // Hoehe des source-Bitmap-Objekts
+    // private int height = 768;
+    private int height = 720;
 
     private Bitmap source = null;
 
@@ -31,6 +42,21 @@ public class FrameProcessorImpl implements IFrameProcessor {
 
         int[] pixels = convertNv12ToBmp(rawFrame, width, height);
         source = createBitmap(pixels, width, height);
+
+        String path = Environment.getExternalStorageDirectory().toString();
+        OutputStream fOut = null;
+        File file = new File(path, "source3.jpg"); // the File to save to
+        try {
+            fOut = new FileOutputStream(file);
+            source.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+            fOut.flush();
+            fOut.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         return null;
     }
@@ -65,6 +91,8 @@ public class FrameProcessorImpl implements IFrameProcessor {
 
             if (i!=0 && (i+2)%width==0)
                 i+=width;
+
+            log.info("i: " + i);
         }
 
         return pixels;
@@ -73,13 +101,27 @@ public class FrameProcessorImpl implements IFrameProcessor {
     private static int convertYUVtoRGB(int y, int u, int v) {
         int r,g,b;
 
+
         r = y + (int)1.402f*v;
         g = y - (int)(0.344f*u +0.714f*v);
         b = y + (int)1.772f*u;
         r = r>255? 255 : r<0 ? 0 : r;
         g = g>255? 255 : g<0 ? 0 : g;
         b = b>255? 255 : b<0 ? 0 : b;
-        return 0xff000000 | (b<<16) | (g<<8) | r;
+
+
+        /*
+        b = y + (int)1.402f*v;
+        g = y - (int)(0.344f*u +0.714f*v);
+        r = y + (int)1.772f*u;
+        b = b>255? 255 : b<0 ? 0 : b;
+        g = g>255? 255 : g<0 ? 0 : g;
+        r = r>255? 255 : r<0 ? 0 : r;
+        */
+
+        //return 0xff000000 | (b<<16) | (g<<8) | r;
+
+        return 0xff000000 | (r<<16) | (g<<8) | b;
     }
 
     private byte[][] extractRelevantParts () {
