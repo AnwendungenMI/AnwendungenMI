@@ -11,5 +11,5 @@ public interface IFrameProcessor
      * @param rawFrame Das Rohdatenframe
      * @return Das verarbeitete Frame
      */
-    Bitmap processFrame(byte[] rawFrame);
+    Bitmap processFrame(Bitmap rawFrame);
 }

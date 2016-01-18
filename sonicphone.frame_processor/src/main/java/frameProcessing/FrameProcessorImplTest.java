@@ -1,9 +1,8 @@
 package frameProcessing;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,18 +17,34 @@ public class FrameProcessorImplTest {
 
 
     public void startProcesssing() throws FileNotFoundException{
-        byte[] nv12Bytes = loadNv12File();
+        //byte[] nv12Bytes = loadNv12File();
+        Bitmap bitmap = loadBMPFile();
 
         FrameProcessorImpl frameProcessor = new FrameProcessorImpl();
 
-        Bitmap bmp = frameProcessor.processFrame(nv12Bytes);
+        //Bitmap bmp = frameProcessor.processFrameOld(nv12Bytes);
+        Bitmap output = frameProcessor.processFrame(bitmap);
+        frameProcessor.clear();
+    }
+
+    public Bitmap loadBMPFile() throws FileNotFoundException {
+        Bitmap bitmap = null;
+
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        path = path + "/" + "source3.jpg";
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        bitmap = BitmapFactory.decodeFile(path, options);
+
+        return bitmap;
     }
 
     public byte[] loadNv12File () throws FileNotFoundException{
 
         byte[] bytes = null;
 
-        File nv12 = null;
+        File nv12;
 
         File sdDir = Environment.getExternalStorageDirectory();
 

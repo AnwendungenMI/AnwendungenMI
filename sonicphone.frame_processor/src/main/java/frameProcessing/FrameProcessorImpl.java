@@ -6,7 +6,8 @@ package frameProcessing;
 
 import interfaces.IFrameProcessor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapRegionDecoder;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Environment;
 
@@ -15,40 +16,63 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 public class FrameProcessorImpl implements IFrameProcessor {
 
     private static Logger log = Logger.getLogger("FrameProcessorImpl");
 
-    // Breite des source-Bitmap-Objekts
-    // private int width = 1024;
-    private int width = 1280;
+    //private int width = 1280;
 
-    // Hoehe des source-Bitmap-Objekts
-    // private int height = 768;
-    private int height = 720;
+    //private int height = 720;
 
-    private Bitmap source = null;
-
-    private Bitmap finalFrame = null;
+    private Bitmap source = null; // 1024*768
+    private Bitmap finalFrame = null; // 1024*768
+    private String format = "rgb565";
 
     public FrameProcessorImpl() {
 
     }
 
-    public Bitmap processFrame (byte[] rawFrame) {
+    public Bitmap processFrame(Bitmap source) {
+        this.source = source;
 
-        int[] pixels = convertNv12ToBmp(rawFrame, width, height);
-        source = createBitmap(pixels, width, height);
+        if(isReady()) {
+            this.finalFrame = buildFinalFrame();
+        }
+
+        if(this.finalFrame != null) {
+            writeToSDCard(this.finalFrame);
+        }
+
+        return this.finalFrame;
+    }
+
+    public void clear() {
+        this.source = null;
+        this.finalFrame = null;
+    }
+
+    public boolean isReady() {
+        boolean isReady = false;
+
+        int pixel = source.getPixel(100, 100);
+        if(pixel == Color.BLACK) {
+            isReady = true;
+        }
+
+        return isReady;
+    }
+
+    public void writeToSDCard(Bitmap bitmap) {
 
         String path = Environment.getExternalStorageDirectory().toString();
         OutputStream fOut = null;
-        File file = new File(path, "source3.jpg"); // the File to save to
+        File file = new File(path, "source5.jpg"); // the File to save to
         try {
             fOut = new FileOutputStream(file);
-            source.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+            // source.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut);
             fOut.flush();
             fOut.close();
         } catch (FileNotFoundException e) {
@@ -56,16 +80,28 @@ public class FrameProcessorImpl implements IFrameProcessor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    /*
+    public Bitmap processFrameOld(byte[] rawFrame) {
+
+        int[] pixels = convertNv12ToBmp(rawFrame, width, height);
+        source = createBitmap(pixels, width, height);
+
+        source.getPixel(100, 100);
+
+        ultraSonicScan = extractUltrasonicScan();
 
         return null;
     }
+    */
 
     private Bitmap createBitmap(int[] pixels, int width, int height) {
         Bitmap bm = Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
         return bm;
     }
 
+    /*
     private static int[] convertNv12ToBmp(byte[] rawFrame, int width, int height) {
         int size = width*height;
         int offset = size;
@@ -97,7 +133,9 @@ public class FrameProcessorImpl implements IFrameProcessor {
 
         return pixels;
     }
+    */
 
+    /*
     private static int convertYUVtoRGB(int y, int u, int v) {
         int r,g,b;
 
@@ -109,32 +147,10 @@ public class FrameProcessorImpl implements IFrameProcessor {
         g = g>255? 255 : g<0 ? 0 : g;
         b = b>255? 255 : b<0 ? 0 : b;
 
-
-        /*
-        b = y + (int)1.402f*v;
-        g = y - (int)(0.344f*u +0.714f*v);
-        r = y + (int)1.772f*u;
-        b = b>255? 255 : b<0 ? 0 : b;
-        g = g>255? 255 : g<0 ? 0 : g;
-        r = r>255? 255 : r<0 ? 0 : r;
-        */
-
-        //return 0xff000000 | (b<<16) | (g<<8) | r;
-
         return 0xff000000 | (r<<16) | (g<<8) | b;
     }
+    */
 
-    private byte[][] extractRelevantParts () {
-
-        Bitmap UltrasonicScan = extractUltrasonicScan();
-        Bitmap ColorScale = extractColorScale();
-
-
-
-
-
-        return null;
-    }
 
     private Bitmap extractUltrasonicScan () {
         Rect UltrasonicScanRegion = new Rect(173, 58, 800, 540);
@@ -145,13 +161,21 @@ public class FrameProcessorImpl implements IFrameProcessor {
     }
 
     private Bitmap extractColorScale () {
-        Rect ColorScaleRegion = new Rect(1, 1, 1, 1);
+        Rect ColorScaleRegion = new Rect(1, 1, 20, 70);
         Bitmap ColorScale = Bitmap.createBitmap(source, 1, 1, ColorScaleRegion.width(), ColorScaleRegion.height());
 
         return ColorScale;
     }
 
-    private void buildFinalFrame() {
+    private Bitmap buildFinalFrame() {
+        Bitmap firstImage = extractUltrasonicScan();
+        Bitmap secondImage = extractColorScale();
 
+        Bitmap result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), source.getConfig());
+        Canvas canvas = new Canvas(result);
+        canvas.drawBitmap(firstImage, 100, 50, null);
+        canvas.drawBitmap(secondImage, 900, 50, null);
+
+        return result;
     }
 }
