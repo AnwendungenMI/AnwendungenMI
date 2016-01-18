@@ -1,3 +1,5 @@
+package de.fh_dortmund.sonicphone.network_frame_provider;
+
 import interfaces.IVideoStreamSource;
 
 /**
@@ -13,5 +15,10 @@ public class NetworkVideoStreamSource implements IVideoStreamSource
     @Override
     public byte[] getNextAccessUnit() {
         return new byte[0];
+    }
+
+    @Override
+    public void connect() {
+
     }
 }

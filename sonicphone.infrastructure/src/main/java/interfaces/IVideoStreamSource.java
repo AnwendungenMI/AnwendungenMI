@@ -14,4 +14,6 @@ public interface IVideoStreamSource
      * @return Die nächste verfügbare AccessUnit
      */
     byte[] getNextAccessUnit();
+
+    void connect();
 }

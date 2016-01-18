@@ -14,5 +14,7 @@ public interface IFrameProvider
     /**
      * @return Das nächste verfügbare Frame im nv12 Format (yuv420sp)
      */
-    byte[] getNextFrame();
+    void registerFrameAvailableCallback(ParamRunnable<byte[]> callback);
+
+    void close();
 }
