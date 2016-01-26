@@ -8,6 +8,7 @@ import interfaces.IFrameProcessor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.os.Environment;
 
@@ -39,6 +40,7 @@ public class FrameProcessorImpl implements IFrameProcessor {
 
         if(isReady()) {
             this.finalFrame = buildFinalFrame();
+            //this.source;
         }
 
         if(this.finalFrame != null) {
@@ -56,7 +58,7 @@ public class FrameProcessorImpl implements IFrameProcessor {
     public boolean isReady() {
         boolean isReady = false;
 
-        int pixel = source.getPixel(100, 100);
+        int pixel = source.getPixel(30, 600);
         if(pixel == Color.BLACK) {
             isReady = true;
         }
@@ -68,7 +70,7 @@ public class FrameProcessorImpl implements IFrameProcessor {
 
         String path = Environment.getExternalStorageDirectory().toString();
         OutputStream fOut = null;
-        File file = new File(path, "source5.jpg"); // the File to save to
+        File file = new File(path, "rgbfile_rotate12.jpg"); // the File to save to
         try {
             fOut = new FileOutputStream(file);
             // source.compress(Bitmap.CompressFormat.PNG, 85, fOut);
@@ -153,28 +155,52 @@ public class FrameProcessorImpl implements IFrameProcessor {
 
 
     private Bitmap extractUltrasonicScan () {
-        Rect UltrasonicScanRegion = new Rect(173, 58, 800, 540);
-        Bitmap UltrasonicScan = Bitmap.createBitmap(source, 173, 58, UltrasonicScanRegion.width(), UltrasonicScanRegion.height());
+        Rect UltrasonicScanRegion = new Rect(200, 60, 800, 550);
+        Bitmap UltrasonicScan = Bitmap.createBitmap(source, 200, 60, UltrasonicScanRegion.width(), UltrasonicScanRegion.height());
         // oder mit "drawBitmap"?
 
         return UltrasonicScan;
     }
 
     private Bitmap extractColorScale () {
-        Rect ColorScaleRegion = new Rect(1, 1, 20, 70);
-        Bitmap ColorScale = Bitmap.createBitmap(source, 1, 1, ColorScaleRegion.width(), ColorScaleRegion.height());
+        Rect ColorScaleRegion = new Rect(978, 60, 1023, 245);
+        Bitmap ColorScale = Bitmap.createBitmap(source, 978, 60, ColorScaleRegion.width(), ColorScaleRegion.height());
 
         return ColorScale;
+    }
+
+    private Bitmap extractValues() {
+        Rect ValueRegion = new Rect(0, 60, 160, 410);
+        Bitmap Values = Bitmap.createBitmap(source, 0, 60, ValueRegion.width(), ValueRegion.height());
+
+        return Values;
     }
 
     private Bitmap buildFinalFrame() {
         Bitmap firstImage = extractUltrasonicScan();
         Bitmap secondImage = extractColorScale();
+        Bitmap thirdImage = extractValues();
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(270);
+        Bitmap rotColorScale = Bitmap.createBitmap(secondImage, 0, 0, secondImage.getWidth(), secondImage.getHeight(), matrix, true);
+        Bitmap rotUltraSonicScan = Bitmap.createBitmap(firstImage, 0, 0, firstImage.getWidth(), firstImage.getHeight(), matrix, true);
+        Bitmap rotValues = Bitmap.createBitmap(thirdImage, 0, 0, thirdImage.getWidth(), thirdImage.getHeight(), matrix, true);
 
         Bitmap result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), source.getConfig());
         Canvas canvas = new Canvas(result);
-        canvas.drawBitmap(firstImage, 100, 50, null);
-        canvas.drawBitmap(secondImage, 900, 50, null);
+
+        Rect UltrasonicScanRegion = new Rect(0, 0, 490, 600);
+        Rect scaledUltrasonicRect = new Rect(0, 0, 627, 768);
+
+        //Rect ValueRegion = new Rect(0, 0, 0, 0);
+        //Rect scaledValueRect = new Rect(300, 630, 0, 0);
+
+        //canvas.drawBitmap(rotUltraSonicScan, 0, 0, null);
+        canvas.drawBitmap(rotUltraSonicScan, UltrasonicScanRegion, scaledUltrasonicRect, null);
+        //canvas.drawBitmap(secondImage, 900, 50, null);
+        canvas.drawBitmap(rotColorScale, 630, 50, null);
+        canvas.drawBitmap(rotValues, 630, 600, null);
 
         return result;
     }
