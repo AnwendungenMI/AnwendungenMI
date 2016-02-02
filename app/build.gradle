@@ -23,4 +23,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':sonicphone.infrastructure')
     compile project(':sonicphone.network_frame_provider')
+    compile project(':sonicphone.frame_processor')
 }

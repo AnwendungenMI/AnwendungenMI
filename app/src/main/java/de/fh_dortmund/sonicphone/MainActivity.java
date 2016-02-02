@@ -26,7 +26,10 @@ import java.util.List;
 
 import de.fh_dortmund.sonicphone.network_frame_provider.FileVideoStreamSource;
 import de.fh_dortmund.sonicphone.network_frame_provider.H264FrameProvider;
+import de.fh_dortmund.sonicphone.network_frame_provider.LZ4NetworkFrameProvider;
 import de.fh_dortmund.sonicphone.network_frame_provider.nalu.Helper;
+import frameProcessing.FrameProcessorImpl;
+import interfaces.IFrameProcessor;
 import interfaces.IFrameProvider;
 import interfaces.IVideoStreamSource;
 import interfaces.ParamRunnable;
@@ -51,25 +54,13 @@ public class MainActivity extends Activity {
 
 //        int res = (int) (Math.random() * 10);
 //        RandomClass.DivideByZero();
-
-        Button nextActivity = (Button)findViewById(R.id.frameViewer);
-        nextActivity.setOnClickListener(new View.OnClickListener(){
+        provider = new LZ4NetworkFrameProvider();
+        final IFrameProcessor processor = new FrameProcessorImpl();
+        provider.registerFrameAvailableCallback(new ParamRunnable<Bitmap>() {
             @Override
-            public void onClick(View view) {
-                //Intent myIntent = new Intent(MainActivity.this, neueActivity.class);
-                Intent myIntent = new Intent(view.getContext(), FrameViewerActivity.class);
-                MainActivity.this.startActivity(myIntent);
-            }
-
-        });
-
-        IVideoStreamSource streamSource = new FileVideoStreamSource();
-        provider = new H264FrameProvider(streamSource);
-        provider.registerFrameAvailableCallback(new ParamRunnable<byte[]>() {
-            @Override
-            public void run(byte[] param) {
+            public void run(final Bitmap param) {
                 if(frameStart == -1)
-                     frameStart = System.currentTimeMillis();
+                    frameStart = System.currentTimeMillis();
 
                 long now = System.currentTimeMillis();
                 if(now-frameStart > 1000) {
@@ -78,29 +69,44 @@ public class MainActivity extends Activity {
                     frameStart = now;
                 }
                 frameCount++;
-                FileOutputStream out = null;
-
-                try {
-                    String name = "/sdcard/testDataFrames/frame_" +  getFrameNameIdx() + ".yuv";
-                    out = new FileOutputStream(name);
-                    out.write(param);
-                    out.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-
-
-                final Bitmap b = nv12ToGray(param, 1280, 720);
+//                FileOutputStream out = null;
+//
+//                try {
+//                    String name = "/sdcard/testDataFrames/frame_" +  getFrameNameIdx() + ".yuv";
+//                    out = new FileOutputStream(name);
+//                    out.write(param);
+//                    out.close();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//
+//
+//
+//                final Bitmap b = nv12ToGray(param, 1280, 720);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mainImageView.setImageBitmap(b);
+                        mainImageView.setImageBitmap(processor.processFrame(param));
                         mainImageView.invalidate();
                     }
                 });
             }
         });
+
+        Button nextActivity = (Button)findViewById(R.id.frameViewer);
+        nextActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent myIntent = new Intent(MainActivity.this, neueActivity.class);
+//                Intent myIntent = new Intent(view.getContext(), FrameViewerActivity.class);
+//                MainActivity.this.startActivity(myIntent);
+                provider.connect();
+            }
+
+        });
+
+//        IVideoStreamSource streamSource = new FileVideoStreamSource();
+
     }
 
     @Override

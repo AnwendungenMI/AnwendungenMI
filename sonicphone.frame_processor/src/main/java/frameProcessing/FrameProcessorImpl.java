@@ -43,9 +43,9 @@ public class FrameProcessorImpl implements IFrameProcessor {
             //this.source;
         }
 
-        if(this.finalFrame != null) {
-            writeToSDCard(this.finalFrame);
-        }
+//        if(this.finalFrame != null) {
+//            writeToSDCard(this.finalFrame);
+//        }
 
         return this.finalFrame;
     }
@@ -63,8 +63,11 @@ public class FrameProcessorImpl implements IFrameProcessor {
             isReady = true;
         }
 
-        return isReady;
+//        return isReady;
+        // TODO: Return real value!
+        return true;
     }
+
 
     public void writeToSDCard(Bitmap bitmap) {
 

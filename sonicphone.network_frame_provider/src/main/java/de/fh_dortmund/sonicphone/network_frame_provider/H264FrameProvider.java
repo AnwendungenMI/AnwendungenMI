@@ -156,8 +156,8 @@ public class H264FrameProvider implements IFrameProvider
     }
 
     @Override
-    public void registerFrameAvailableCallback(ParamRunnable<byte[]> callback) {
-        this.frameAvailableCallback = callback;
+    public void registerFrameAvailableCallback(ParamRunnable<Bitmap> callback) {
+
     }
 
     @Override
@@ -168,5 +168,10 @@ public class H264FrameProvider implements IFrameProvider
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void connect() {
+
     }
 }
