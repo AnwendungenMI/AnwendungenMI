@@ -3,6 +3,7 @@ package de.fh_dortmund.sonicphone;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.Image;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
@@ -51,6 +52,14 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mainImageView = (ImageView)findViewById(R.id.mainImageView);
+        mainImageView.setRotation(-90);
+//        int color = Color.argb(255, 255, 0, 0);
+//        int[] colors = new int[1024*768];
+//        for(int i = 0; i < colors.length; i++)
+//            colors[i] = color;
+//        Bitmap b = Bitmap.createBitmap(colors, 1024, 768, Bitmap.Config.ARGB_8888);
+//        mainImageView.setImageBitmap(b);
+
 
 //        int res = (int) (Math.random() * 10);
 //        RandomClass.DivideByZero();

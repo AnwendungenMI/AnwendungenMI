@@ -55,8 +55,8 @@ public class LZ4NetworkFrameProvider implements IFrameProvider
                     byte[] decompressedData = new byte[width*height*2];
 
                     int dataSize = 0;
-//                    Socket s = new Socket(InetAddress.getByName("172.22.16.180"), 42000);
-                    Socket s = new Socket(InetAddress.getByName("192.168.0.113"), 42000);
+                    Socket s = new Socket(InetAddress.getByName("172.22.16.180"), 42000);
+//                    Socket s = new Socket(InetAddress.getByName("192.168.0.113"), 42000);
                     InputStream in = s.getInputStream();
 
                     while(true)

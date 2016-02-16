@@ -17,11 +17,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 public class FrameProcessorImpl implements IFrameProcessor {
 
     private static Logger log = Logger.getLogger("FrameProcessorImpl");
+    int idx = 0;
 
     //private int width = 1280;
 
@@ -44,7 +46,7 @@ public class FrameProcessorImpl implements IFrameProcessor {
         }
 
 //        if(this.finalFrame != null) {
-//            writeToSDCard(this.finalFrame);
+//            writeToSDCard(source);
 //        }
 
         return this.finalFrame;
@@ -63,9 +65,9 @@ public class FrameProcessorImpl implements IFrameProcessor {
             isReady = true;
         }
 
-//        return isReady;
+        return isReady;
         // TODO: Return real value!
-        return true;
+//        return true;
     }
 
 
@@ -73,7 +75,7 @@ public class FrameProcessorImpl implements IFrameProcessor {
 
         String path = Environment.getExternalStorageDirectory().toString();
         OutputStream fOut = null;
-        File file = new File(path, "rgbfile_rotate12.jpg"); // the File to save to
+        File file = new File(path, "rgbfile_rotate" + idx++ + ".jpg"); // the File to save to
         try {
             fOut = new FileOutputStream(file);
             // source.compress(Bitmap.CompressFormat.PNG, 85, fOut);
@@ -158,8 +160,8 @@ public class FrameProcessorImpl implements IFrameProcessor {
 
 
     private Bitmap extractUltrasonicScan () {
-        Rect UltrasonicScanRegion = new Rect(200, 60, 800, 550);
-        Bitmap UltrasonicScan = Bitmap.createBitmap(source, 200, 60, UltrasonicScanRegion.width(), UltrasonicScanRegion.height());
+        Rect UltrasonicScanRegion = new Rect(298, 60, 691, 507);
+        Bitmap UltrasonicScan = Bitmap.createBitmap(source, 298, 60, UltrasonicScanRegion.width(), UltrasonicScanRegion.height());
         // oder mit "drawBitmap"?
 
         return UltrasonicScan;
@@ -180,22 +182,28 @@ public class FrameProcessorImpl implements IFrameProcessor {
     }
 
     private Bitmap buildFinalFrame() {
+
         Bitmap firstImage = extractUltrasonicScan();
         Bitmap secondImage = extractColorScale();
         Bitmap thirdImage = extractValues();
 
         Matrix matrix = new Matrix();
         matrix.postRotate(270);
-        Bitmap rotColorScale = Bitmap.createBitmap(secondImage, 0, 0, secondImage.getWidth(), secondImage.getHeight(), matrix, true);
+
+        Matrix m180 = new Matrix();
+        m180.postRotate(90);
+
+        Bitmap rotColorScale = Bitmap.createBitmap(secondImage, 0, 0, secondImage.getWidth(), secondImage.getHeight(), m180, true);
         Bitmap rotUltraSonicScan = Bitmap.createBitmap(firstImage, 0, 0, firstImage.getWidth(), firstImage.getHeight(), matrix, true);
-        Bitmap rotValues = Bitmap.createBitmap(thirdImage, 0, 0, thirdImage.getWidth(), thirdImage.getHeight(), matrix, true);
+        Bitmap rotValues = Bitmap.createBitmap(thirdImage, 0, 0, thirdImage.getWidth(), thirdImage.getHeight(), m180, true);
 
         Bitmap result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), source.getConfig());
         Canvas canvas = new Canvas(result);
 
-        Rect UltrasonicScanRegion = new Rect(0, 0, 490, 600);
-        Rect scaledUltrasonicRect = new Rect(0, 0, 627, 768);
-
+//        Rect UltrasonicScanRegion = new Rect(0, 0, 490, 386);
+        Rect UltrasonicScanRegion = new Rect(0, 0, rotUltraSonicScan.getWidth(), rotUltraSonicScan.getHeight());
+        Rect scaledUltrasonicRect = new Rect(0, 0, 873, 768);
+//        this.writeToSDCard(rotUltraSonicScan);
         //Rect ValueRegion = new Rect(0, 0, 0, 0);
         //Rect scaledValueRect = new Rect(300, 630, 0, 0);
 
@@ -205,6 +213,27 @@ public class FrameProcessorImpl implements IFrameProcessor {
         canvas.drawBitmap(rotColorScale, 630, 50, null);
         canvas.drawBitmap(rotValues, 630, 600, null);
 
+//        Matrix finalRotation = new Matrix();
+//        finalRotation.postRotate(-90);
+//        Bitmap finalBitmap = Bitmap.createBitmap(result, 0, 0, result.getWidth(), result.getHeight(), finalRotation, true);
+//        result.recycle();
+//        result = null;
+//        rotColorScale.recycle();
+//        rotColorScale = null;
+//        rotUltraSonicScan.recycle();
+//        rotUltraSonicScan = null;
+//        rotValues.recycle();
+//        rotValues = null;
+//        firstImage.recycle();
+//        firstImage = null;
+//        secondImage.recycle();
+//        secondImage = null;
+//        thirdImage.recycle();
+//        thirdImage = null;
+
         return result;
     }
+
+
+
 }
